@@ -1,5 +1,12 @@
 //Biblioteca responsável pela conexão com o postgree
 const Client = require('pg').Client
+const cliente = new Client({
+    user: "admin",
+    password: "admin",
+    host: "localhost",
+    port: 5432,
+    database: "fastapi"
+})
 
 //USANDO EXPRESS
 const express = require('express');
@@ -20,18 +27,11 @@ const jwt = require('jsonwebtoken');
 //SELECT
 //getUsers()
 async function getUsers(){
-    const cliente = new Client({
-        user: "postgres",
-        password: "postgres",
-        host: "localhost",
-        port: 5432,
-        database: "API_REST_PROJECT"
-    })
     try{
         console.log("Iniciando a conexão.")
         await cliente.connect() //Inicia a conexão
         console.log("Conexão bem sucedida!")
-        const resultado = await cliente.query("SELECT * FROM library.user") //Executa a query SQL
+        const resultado = await cliente.query("SELECT * FROM users") //Executa a query SQL
         console.table(resultado.rows)
     }catch(ex){
         console.log("Ocorreu um erro. Erro: " + ex)
@@ -44,23 +44,15 @@ async function getUsers(){
 //INSERT
 //insertUsers("Glaucia", "151.326.147-52")
 async function insertUsers(name, cpf){
-    const cliente = new Client({
-        user: "postgres",
-        password: "postgres",
-        host: "localhost",
-        port: 5432,
-        database: "API_REST_PROJECT"
-    })
-    console.log('Chamou a funcao')
     try{
         console.log("Iniciando a conexão.")
         await cliente.connect()
         console.log("Conexão bem sucedida!")
-        //await cliente.query('insert into library.user("name", "cpf") values ('+"'"+name+"', '"+cpf+"');")
-        await cliente.query(`INSERT INTO library.user("name", "cpf") VALUES ('${name}', '${cpf}')`)
+        //await cliente.query('insert into users("name", "cpf") values ('+"'"+name+"', '"+cpf+"');")
+        await cliente.query(`INSERT INTO users("name", "cpf") VALUES ('${name}', '${cpf}')`)
         console.log("Valor inserido na tabela")
 
-        const resultado = await cliente.query("SELECT * FROM library.user")
+        const resultado = await cliente.query("SELECT * FROM users")
         console.table(resultado.rows)
     }catch(ex){
         console.log("Ocorreu um erro. Erro: " + ex)
@@ -73,22 +65,15 @@ async function insertUsers(name, cpf){
 //DELETE
 //deleteUser(5)
 async function deleteUser(id){
-    const cliente = new Client({
-        user: "postgres",
-        password: "postgres",
-        host: "localhost",
-        port: 5432,
-        database: "API_REST_PROJECT"
-    })
     try{
         id = id.id
         console.log("Iniciando a conexão.")
         await cliente.connect()
         console.log("Conexão bem sucedida!")
-        await cliente.query(`DELETE FROM library.user WHERE id = ${id}`)
+        await cliente.query(`DELETE FROM users WHERE id = ${id}`)
         console.log("Valor inserido na tabela")
 
-        const resultado = await cliente.query("SELECT * FROM library.user")
+        const resultado = await cliente.query("SELECT * FROM users")
         console.table(resultado.rows)
         
     }catch(ex){
@@ -102,22 +87,15 @@ async function deleteUser(id){
 //UPDATE
 //updateUser('name', 'Alberto', 6)
 async function updateUser(columnName, value, id){
-    const cliente = new Client({
-        user: "postgres",
-        password: "postgres",
-        host: "localhost",
-        port: 5432,
-        database: "API_REST_PROJECT"
-    })
     try{
         console.log(columnName, value, id)
         console.log("Iniciando a conexão.")
         await cliente.connect()
         console.log("Conexão bem sucedida!")
-        await cliente.query(`UPDATE library.user SET ${columnName} = '${value}' WHERE id = ${id}`)
+        await cliente.query(`UPDATE users SET ${columnName} = '${value}' WHERE id = ${id}`)
         console.log("Valor inserido na tabela")
 
-        const resultado = await cliente.query("SELECT * FROM library.user")
+        const resultado = await cliente.query("SELECT * FROM users")
         console.table(resultado.rows)
         
     }catch(ex){
