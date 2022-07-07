@@ -8,6 +8,11 @@ const pool = new Pool({
     database: "fastapi"
 })
 
+//INITIAL ROUTE
+const initialRoute = async (req, res) => {
+    res.send('Seja muito bem-vindo ao projeto de uma API REST desenvolvido por Erick Nascimento')
+};
+
 //SELECT
 const getUsers = async (req, res) => {
     const response = await pool.query('SELECT * FROM users');
@@ -52,11 +57,21 @@ const updateUser = async (req, res) => {
     res.json(`Usuário ${id} atualizado com sucesso`)
 };
 
+//UPDATE PARTIALLY
+const updateUserPartially = async (req, res) => {
+    const id = req.params.id;
+    const {columnName, value} = req.body;
+    const response = await pool.query(`UPDATE users SET ${columnName} = '${value}' WHERE id = ${id}`);
+    res.json(`Usuário ${id} atualizado com sucesso`)
+};
+
 
 module.exports = {
+    initialRoute,
     getUsers,
     registerUser,
     getUserById,
     deleteUser,
-    updateUser
+    updateUser,
+    updateUserPartially
 }
