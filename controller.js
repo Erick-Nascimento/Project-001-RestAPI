@@ -13,7 +13,7 @@ const initialRoute = async (req, res) => {
     res.send('Seja muito bem-vindo ao projeto de uma API REST desenvolvido por Erick Nascimento')
 };
 
-//SELECT
+//SELECT ALL USERS
 const getUsers = async (req, res) => {
     const response = await pool.query('SELECT * FROM users');
     res.status(200).json(response.rows)
@@ -27,12 +27,12 @@ const getUserById = async (req, res) => {
 
 //INSERT
 const registerUser = async (req, res) => {
-    const { name, cpf } = req.body;
-    const response = await pool.query(`INSERT INTO users("name", "cpf") VALUES ('${name}', '${cpf}')`)
+    const { name, cpf , email, password} = req.body;
+    const response = await pool.query(`INSERT INTO users("name", "cpf", "email", "password") VALUES ('${name}', '${cpf}', '${email}', '${password}')`)
     res.json({
         message: 'Usuário criado com sucesso!',
         body:{
-            user: {name, cpf}
+            user: {name, cpf, email, password}
         }
     })
 };
@@ -47,11 +47,13 @@ const deleteUser = async (req, res) => {
 //UPDATE
 const updateUser = async (req, res) => {
     const id = req.params.id;
-    const {name, cpf} = req.body;
+    const {name, cpf, email, password} = req.body;
     
-    const response = await pool.query('UPDATE users SET name=$1, cpf=$2 WHERE id=$3', [
+    const response = await pool.query('UPDATE users SET name=$1, cpf=$2 , email=$3, password=$4 WHERE id=$5', [
         name,
         cpf,
+        email,
+        password,
         id
     ]);
     res.json(`Usuário ${id} atualizado com sucesso`)
