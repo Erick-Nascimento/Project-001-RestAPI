@@ -1,4 +1,6 @@
 const { Pool } = require('pg');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const pool = new Pool({
     user: "admin",
@@ -28,7 +30,8 @@ const getUserById = async (req, res) => {
 //INSERT
 const registerUser = async (req, res) => {
     const { name, cpf , email, password} = req.body;
-    const response = await pool.query(`INSERT INTO users("name", "cpf", "email", "password") VALUES ('${name}', '${cpf}', '${email}', '${password}')`)
+    const hashPassword = await bcrypt.hash(password, 10)
+    const response = await pool.query(`INSERT INTO users("name", "cpf", "email", "password") VALUES ('${name}', '${cpf}', '${email}', '${hashPassword}')`)
     res.json({
         message: 'Usuário criado com sucesso!',
         body:{
@@ -67,6 +70,30 @@ const updateUserPartially = async (req, res) => {
     res.json(`Usuário ${id} atualizado com sucesso`)
 };
 
+const userLogin = async (req, res, next) => {
+    const SECRET = 'Teste'
+    const {email, password} = req.body;
+
+    const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
+   
+    if (result.rows.length == 1){
+
+        await bcrypt.compare(password, result.rows[0].password, function(err, resultado){           
+            if(err){
+                res.status(401).send({message: 'Usuário não autenticado'})
+            }
+            if(resultado){
+                const token = jwt.sign({}, SECRET, {expiresIn: 300});
+                return res.status(200).send({message: 'Usuário autenticado com sucesso!', auth: true, token})
+            }
+            res.status(401).send({message: 'Usuário não autenticado'})
+        })
+    }else{
+        res.json({message: 'Usuário não autenticado'})
+    }
+
+}
+
 
 module.exports = {
     initialRoute,
@@ -75,5 +102,6 @@ module.exports = {
     getUserById,
     deleteUser,
     updateUser,
-    updateUserPartially
+    updateUserPartially,
+    userLogin
 }

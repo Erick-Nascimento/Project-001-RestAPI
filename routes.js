@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-const { initialRoute, getUsers, getUserById, registerUser, deleteUser, updateUser, updateUserPartially } = require('./controller')
+const { initialRoute, getUsers, getUserById, registerUser, deleteUser, updateUser, updateUserPartially, userLogin } = require('./controller')
 
 router.get('/', initialRoute)
 router.get('/users', getUsers);
@@ -10,5 +10,6 @@ router.post('/register-user', registerUser);
 router.delete('/deleteUser/:id', deleteUser);
 router.put('/updateUser/:id', updateUser);
 router.patch('/updateUserPartially/:id', updateUserPartially)
+router.post('/login', userLogin)
 
 module.exports = router;
