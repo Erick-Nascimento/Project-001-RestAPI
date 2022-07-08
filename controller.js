@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const rateLimit = require('express-rate-limit')
 
 const pool = new Pool({
     user: "admin",
@@ -8,6 +9,11 @@ const pool = new Pool({
     host: "localhost",
     port: 5432,
     database: "fastapi"
+})
+
+const rateLimiter = rateLimit({
+	max: 3,
+    windowMs: 1*60 *1000
 })
 
 //INITIAL ROUTE
@@ -116,5 +122,6 @@ module.exports = {
     updateUser,
     updateUserPartially,
     userLogin,
-    protectedRoute
+    protectedRoute,
+    rateLimiter
 }
