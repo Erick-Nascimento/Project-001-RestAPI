@@ -71,7 +71,7 @@ const updateUserPartially = async (req, res) => {
 };
 
 const userLogin = async (req, res, next) => {
-    const SECRET = 'Teste'
+    const SECRET = 'password'
     const {email, password} = req.body;
 
     const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
@@ -92,7 +92,19 @@ const userLogin = async (req, res, next) => {
         res.json({message: 'Usuário não autenticado'})
     }
 
-}
+};
+
+const protectedRoute = async (req, res) => {
+    const SECRET = 'password'
+    const token = req.headers['x-access-token'];
+    
+    jwt.verify(token, SECRET, (err, decoded)=> {
+        if(err) return res.status(401).send({message: 'Usuário não autenticado'})
+
+        if(decoded) return res.json({message: 'Bem vindo a rota protegida!'})
+    })
+
+};
 
 
 module.exports = {
@@ -103,5 +115,6 @@ module.exports = {
     deleteUser,
     updateUser,
     updateUserPartially,
-    userLogin
+    userLogin,
+    protectedRoute
 }
